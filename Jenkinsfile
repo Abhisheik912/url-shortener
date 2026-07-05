@@ -25,7 +25,7 @@ pipeline {
                 script {
                     def scannerHome = tool 'sonar'
                     withSonarQubeEnv('Local sonar') {
-                        bat "\"${scannerHome}\\bin\\sonar-scanner.bat\" -X"
+                        bat "\"${scannerHome}\\bin\\sonar-scanner.bat\" -Dsonar.host.url=%SONAR_HOST_URL% -Dsonar.token=%SONAR_AUTH_TOKEN% -X"
                     }
                 }
             }
