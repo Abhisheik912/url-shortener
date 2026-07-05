@@ -5,7 +5,7 @@ pipeline {
         IMAGE_NAME = "abhisheik912/url-shortener"
         PYTHON = "C:\\Users\\Abhisheik\\AppData\\Local\\Python\\bin\\python.exe"
     }
-#nothing to change here
+
     stages {
 
         stage('Install Dependencies') {
