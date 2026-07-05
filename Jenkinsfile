@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        sonarRunner 'sonar'
-    }
-
     environment {
         IMAGE_NAME = "abhisheik912/url-shortener"
         PYTHON = "C:\\Users\\Abhisheik\\AppData\\Local\\Python\\bin\\python.exe"
