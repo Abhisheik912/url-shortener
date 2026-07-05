@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        sonarQube 'SonarScanner'
+        sonarRunner 'sonar'
     }
 
     environment {
@@ -26,8 +26,11 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('Local sonar') {
-                    bat 'sonar-scanner'
+                script {
+                    def scannerHome = tool 'sonar'
+                    withSonarQubeEnv('Local sonar') {
+                        bat "\"${scannerHome}\\bin\\sonar-scanner.bat\""
+                    }
                 }
             }
         }
