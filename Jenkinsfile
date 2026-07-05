@@ -1,34 +1,32 @@
 pipeline {
     agent any
 
+    tools {
+        sonarQube 'SonarScanner'
+    }
+
     environment {
         IMAGE_NAME = "abhisheik912/url-shortener"
+        PYTHON = "C:\\Users\\Abhisheik\\AppData\\Local\\Python\\bin\\python.exe"
     }
 
     stages {
 
-        stage('Checkout') {
-            steps {
-                git branch: 'main',
-                    url: 'https://github.com/Abhisheik912/url-shortener.git'
-            }
-        }
-
         stage('Install Dependencies') {
             steps {
-                bat '"C:\\Users\\Abhisheik\\AppData\\Local\\Python\\bin\\python.exe" -m pip install -r requirements.txt'
+                bat "\"%PYTHON%\" -m pip install -r requirements.txt"
             }
         }
 
         stage('Run Unit Tests') {
             steps {
-                bat '"C:\\Users\\Abhisheik\\AppData\\Local\\Python\\bin\\python.exe" -m pytest'
+                bat "\"%PYTHON%\" -m pytest"
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarQube') {
+                withSonarQubeEnv('Local sonar') {
                     bat 'sonar-scanner'
                 }
             }
@@ -44,7 +42,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t %IMAGE_NAME%:latest .'
+                bat "docker build -t %IMAGE_NAME%:latest ."
             }
         }
 
@@ -55,22 +53,30 @@ pipeline {
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
-
-                    bat '''
+                    bat """
                     docker login -u %DOCKER_USER% -p %DOCKER_PASS%
                     docker push %IMAGE_NAME%:latest
-                    '''
+                    """
                 }
             }
         }
 
         stage('Deploy') {
             steps {
-                bat '''
+                bat """
                 docker rm -f url-shortener
                 docker run -d --name url-shortener -p 5000:5000 %IMAGE_NAME%:latest
-                '''
+                """
             }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed.'
         }
     }
 }
